@@ -9,7 +9,7 @@ breed [ possessors possessor ]
 ; - energy is a measure of the fitness of the agents. Since they fetch it from the environment, patches also own energy.
 ; - energy-time keeps track of the times passed after energy has been taken from a patch
 ; - xhere and yhere are the plane coordinates of an agent
-; - trys (== tries :facepalm:) is the number of attempt available for a turtle to ...?
+; - trys (== tries :facepalm:) is the number of attempts available for a turtle to ...?
 ; - property is a binary indicating an agent's status of owner (1) / intruder (0)
 turtles-own [turtle-energy xhere yhere trys property]
 patches-own [energy energy-time]
@@ -33,7 +33,7 @@ ask hawks
 ask possessors
 [set color yellow]
 
-; all of the agents are scattered at random across the plane and given an initial energy that is pecified by the user
+; all of the agents are scattered at random across the plane and given an initial energy that is specified by the user
 ; also turtles' property status must be initialized
 ask turtles
 [
@@ -149,8 +149,8 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
               [ask myself [set turtle-energy (turtle-energy + value)]]
             ]
             ; HAWK vs POSSESSOR:
-            ; - both gelf half the value (discounted by the fighting cost) is P is an owner
-            ; - HAWK gets full value and POSSESSOR gets nothing is P is an intrude
+            ; - both gelf half the value (discounted by the fighting cost) if P is an owner
+            ; - HAWK gets full value and POSSESSOR gets nothing if P is an intruder
         ]
       ]
 
@@ -202,8 +202,8 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
                [set turtle-energy (turtle-energy + value)]
              ]
            ; POSSESSOR vs POSSESSOR
-           ; - if the currently selected P is an owner, its opponent is necessary an intruder and will behave as a dove, therefore the former wins the full value
-           ; - if the currently selected P is an intruder, its opponent is necessary an owner and will behave as a hawk, therefore the latter wins the full value
+           ; - if the currently selected P is an owner, its opponent is necessarily an intruder and will behave as a dove, therefore the former wins the full value
+           ; - if the currently selected P is an intruder, its opponent is necessarily an owner and will behave as a hawk, therefore the latter wins the full value
           ]
         ]
     ]
@@ -373,7 +373,7 @@ true
 PENS
 "Hawks" 1.0 0 -65536 true "" ""
 "Doves" 1.0 0 -16777216 true "" ""
-"Possessors" 1.0 0 -7500403 true "" ""
+"Possessors" 1.0 0 -987046 true "" ""
 
 SLIDER
 220
@@ -414,7 +414,7 @@ value
 value
 0
 10
-3.0
+6.0
 1
 1
 NIL
@@ -429,7 +429,7 @@ cost
 cost
 0
 10
-3.0
+4.0
 1
 1
 NIL
@@ -504,16 +504,6 @@ init-possessors
 NIL
 HORIZONTAL
 
-TEXTBOX
-991
-66
-1141
-138
-HELLO WORLD
-30
-0.0
-1
-
 SLIDER
 222
 10
@@ -530,39 +520,31 @@ NIL
 HORIZONTAL
 
 @#$#@#$#@
-## WHAT IS IT?
+## Classic Hawk vs Dove
 
-This is a model based on evolutionary game theory. This theory was first applied to evolutionary processes by John Maynard Smith. Game theory is based on sub-groups of interacting agents, drawn from a meta-population, with certain payoffs occurring between the agents. These payoffs depend on the behavioral strategies of each of the interacting agents. In biology, the classic example is "doves and hawks" where two behavioral strategies exist in a population of organisms, the "dove" strategy, which is cooperative, and the "hawk" strategy, which is exploitative. When the agents encounter a resource, they can access it by working together. If two doves cooperate, then they share the resource equally, 0.5v (where v = value of resource). However, if a hawk and dove come together on a resource, the hawk grabs everything, so the dove gets zero and the hawk gets v. The catch comes if two hawks interact--they both try to grab the resource, fight at a cost (cost = c) and so, on average, get 0.5v-c. 
+The model we have built is based on evolutionary game theory, a discipline first applied to evolutionary processes by John Maynard Smith. Game theory is based on sub-groups of interacting agents with certain payoffs occurring between the agents. These payoffs depend on the behavioral strategies of each of the interacting agents. In biology, the classic example is "doves and hawks" where two behavioral strategies exist in a population of organisms, the "dove" strategy, which is cooperative, and the "hawk" strategy, which is exploitative. When the agents encounter a resource, they can access it by working together. If two doves cooperate, then they share the resource equally, 0.5v (where v = value of resource). However, if a hawk and dove come together on a resource, the hawk grabs everything, so the dove gets zero and the hawk gets v. The catch comes if two hawks interact--they both try to grab the resource, fight at a cost (cost = c) and so, on average, get 0.5v-c. 
 
 Depending on the value of the resource, v, and the cost of fighting, c, hawks can go to fixation (eliminate the doves) or a stable polymorphism can exist, where the level of doves and hawks balances, though not necessarily at 50% each in the population.
 
-In this model, I have also added a third strategy, "retaliator." Retaliators act like doves with actual doves and with other retaliators, but act like hawks with hawks. Retaliators thus have an advantage over hawks because they will only pay the cost, c, of fighting if they interact with a hawk but won't pay that cost if interacting with a dove or another retaliator. Hawks, however, will pay the cost c if they interact with another hawk or retaliator. A population with all three strategies can have a number of different outcomes, depending on whether doves go extinct.
+## The Possessors
 
-## HOW IT WORKS
+The novelty of our simulation is to be found in the presence of a new type of agents, the possessors. In every period T, each possessor can either be an owner or an intruder. In the former case, the agent acts as a hawk (because it "owns" the resource, so it does not want to lose the access to it). Inversely, when a possessor does not own the resource but is only trying to access it without having any rights on it, i.e. it is an intruder, its strategy resembles the one of doves.
 
-Turtles wander from patch to patch in a somewhat random fashion (they change their heading plus or minus 45 degrees). Each move costs energy, but they can get energy from patches. If they arrive alone, then they get all the energy but if there is another turtle, then they get a payoff depending on thee type of turtle they are there with. Up to two turtles can occupy the same patch. If the energy of a turtle reaches a certain level, it reproduces asexually, and if its energy reaches zero, it dies.
+## The Game
 
-The reason that a turtle gets energy if alone is that otherwise, in situations where there is a net cost for hawks interacting with other hawks and there are two strategies, hawk and dove, then the hawks would become fixed, and then all die!!!
+Agents wander from patch to patch in a somewhat random fashion (they change their heading plus or minus 45 degrees). Each move costs energy, but they can get energy from patches. If they arrive alone, then they get all the energy but if there is another agent, then they get a payoff depending on thee type of turtle they are sharing the patch with. Up to two turtles can occupy the same patch. If the energy of a turtle reaches a certain level, it reproduces asexually, and if its energy reaches zero, it dies.
 
-Patches require a certain amount of time before they recover their resource value. This controls the population of turtles. Patches with resources avalable are green; they are a lighter color if their resources are not available.
+Patches require a certain amount of time before they recover their resource value. This controls the population of agents. Patches with resources avalable are green; they are a lighter color if their resources are not available.
 
-## HOW TO USE IT
+## Results
 
-Run the model with only doves and hawks. Start with equal numbers of each type, and with the value of the resource greater than twice the cost of fighting. The doves will go extinct.
+Of course, the outcome of the game depends on the choice of the parameters. Starting from a situation in which the value of the patch is equal to the cost of fighting for it, the hybrid strategy of acting as possessors drive both hawks and doves to extinction relatively quickly (around 6,000 cycles). As we increase the value of patches, however, the time it takes for possessors to drive hawks to extinction increases. At a Value/Cost ratio of 3/2 it takes around 25,000 cycles for the hawk population to disappear. Somewhere close to this threshold the situation overturns: when the value of the good becomes somehow too high with respect to the cost of fighting, acting as a hawk becomes more advantageous.
 
-Now try the same again, but have the value of resource greater than the cost, but less than twice as great. A stable polymorphism should result.
+What if, instead, we decrease the Value-Cost ratio below one? Logically, we would expect doves to exploit the other two strategies and bring hawks and possessors down to extinction, but this is not what it happens. Acting as a possessor is always a better choice with respect to acting as a dove.
 
-Next, set the cost of fighting greater than the value of the resource. The polymorphism is still stable, but the level has changed.
+## Reference
 
-Finally, put some retaliators in the population, set v > 2c and run again. Now, there is an unstable polymorphism. Try different runs with the same settings. Vary the intial numbers of each type of organism.
-
-## AUTHOR CONTACT INFO (AS OF AUGUST 2003):
-
-Rick O'Gorman  
-SUNY-Binghamton  
-Binghamton NY 13902-6000  
-USA  
-jogorman@binghamton.edu
+For the H-D game set-up we have made use of the work of Rick O’Gorman, to be found at the website http://ccl.northwestern.edu/netlogo/models/community/GameTheory.
 @#$#@#$#@
 default
 true
