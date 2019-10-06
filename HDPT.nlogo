@@ -9,14 +9,14 @@ breed [ possessors possessor ]
 ; - energy is a measure of the fitness of the agents. Since they fetch it from the environment, patches also own energy.
 ; - energy-time keeps track of the times passed after energy has been taken from a patch
 ; - xhere and yhere are the plane coordinates of an agent
-; - trys (== tries :facepalm:) is the number of attempts available for a turtle to ...?
+; - trys is the number of attempts available for a turtle to ...?
 ; - property is a binary indicating an agent's status of owner (1) / intruder (0)
 turtles-own [turtle-energy xhere yhere trys property]
 patches-own [energy energy-time]
 
 ;******************SETUP**************************
 to setup
-ca
+clear-all
 set cycles 0
 ask patches [set pcolor green set energy-time 1] ; patches are initialized with full energy
 
@@ -50,10 +50,10 @@ end
 
 ;*********************GO*************************
 
-; Main routine. Does essentially all the stuff.
+; Main routine
 to go
 
-; after a certain specified amount of time has passed, energy is replenished in patches
+; After a certain specified threshold, energy is replenished in patches
 ask patches with [energy-time >= energy-time-threshold and pcolor = green + 1]
 [set pcolor green]
 
@@ -76,7 +76,6 @@ if not any? turtles
 [do-plot-zero
 stop]
 
-; plot stuff (see "to-plot" routine)
 ; increment cycle (which is basically tick counter...) and energy-time for every patch
 do-plot
 set cycles cycles + 1
@@ -88,11 +87,13 @@ end
 
 ;*********************TO MOVE*************************
 
-; Agents move. Their heading is changed at random within [-45°, 45°] rightwards and if there are 0 or 1 agents in the patches neearby, they're allowed to take \\
-; a step. If they cannot move they have, say, 9 attempts to head elsewhere and find an accessible spot.
+; Agents move. Their heading is changed at random within [-45°, 45°] rightwards and if there are 0 or 1 agents in the patches neearby, they're allowed to take
+; a step. If they cannot move they have 9 attempts to head elsewhere and find an accessible spot.
 ; Agents consume one unit of energy by taking a step.
-; Two agents can only end up on the same patch if their ownership status mismatch, as only one can be the owner \\
-; and only one the intruder at any given time on any given patch.
+; The main idea of how agents move is taken from the model of Rick O' Gorman (for more information, Info section). However, to make our extended model reasonable owners
+; need to not occupy a patch at the same time. For this reason, we extended the model in a way that two agents can only end up on the same patch if their ownership status mismatch,
+; as only one can be the owner and only one the intruder at any given time on any given patch.
+
 to move
 let neighbour-property 0
 let status-match False
@@ -127,20 +128,26 @@ ask patches with [count turtles-here = 1 and pcolor = green] ; why would it need
 
 
 ; On twofold populated patches energy contention takes place (if there happens to be energy indeed)
-; To tell agents what to do we need a stratified if hierarchy since their behaviour depends on both their breed and their opponent's breed
+; To tell agents what to do we need a stratified if hierarchy since their behaviour depends on both their breed and their opponent's breed.
+; Once again, the core idea how agents refill their energy is taken from the original model of Rick O' Gorman: however, extensions are needed
+; to allow for interactions between all four of our type of agents.
+
 ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need to be energy-time >= energy-time-threshold ?
 [without-interruption
   [
     ask one-of turtles-here
     [if breed = hawks
       [ask other turtles-here
+        ; HAWK vs HAWK: both get half the value decreased by the fighting cost (again an user-defined parameter)
         [if breed = hawks
           [set turtle-energy (turtle-energy + 0.5 * value - cost)
             ask myself [set turtle-energy (turtle-energy + 0.5 * value - cost)]]
-            ; HAWK vs HAWK: both get half the value decreased by the fighting cost (again an user-defined parameter)
-         if breed = doves          ; doves get nothing versus hawks
+        ; HAWK vs DOVE: HAWK gets full value, DOVE gets nothing
+         if breed = doves
            [ask myself [set turtle-energy (turtle-energy + value)]]
-            ; HAWK vs DOVE: HAWK gets full value, DOVE gets nothing
+        ; HAWK vs POSSESSOR:
+           ; - both gelf half the value (discounted by the fighting cost) if P is an owner
+           ; - HAWK gets full value and POSSESSOR gets nothing if P is an intruder
          if breed = possessors
             [if property = 1
               [set turtle-energy (turtle-energy + 0.5 * value - cost)
@@ -148,21 +155,21 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
              if property = 0
               [ask myself [set turtle-energy (turtle-energy + value)]]
             ]
-            ; HAWK vs POSSESSOR:
-            ; - both gelf half the value (discounted by the fighting cost) if P is an owner
-            ; - HAWK gets full value and POSSESSOR gets nothing if P is an intruder
         ]
       ]
 
     if breed = doves
       [ask other turtles-here
+        ; DOVE vs HAWK: HAWK gets full value, DOVE gets nothing
         [if breed = hawks
           [set turtle-energy (turtle-energy + value)]
-              ; DOVE vs HAWK: HAWK gets full value, DOVE gets nothing
+        ; DOVE vs DOVE: both get half the value without paying any toll for fighting
           if breed = doves
           [set turtle-energy (turtle-energy + 0.5 * value)
               ask myself [set turtle-energy (turtle-energy + 0.5 * value)]]
-              ; DOVE vs DOVE: both get half the value without paying any toll for fighting
+        ; DOVE vs POSSESSOR:
+        ; - P gets full value and D gets nothing if POSSESSOR is an owner
+        ; - both get half the value without paying any toll if P is an intruder
           if breed = possessors
           [if property = 1
               [set turtle-energy (turtle-energy + value)]
@@ -170,15 +177,13 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
               [set turtle-energy (turtle-energy + 0.5 * value)
                 ask myself [set turtle-energy (turtle-energy + 0.5 * value)]]
           ]
-          ; DOVE vs POSSESSOR:
-          ; - P gets full value and D gets nothing if POSSESSOR is an owner
-          ; - both get half the value without paying any toll if P is an intruder
         ]
       ]
 
       if breed = possessors
       [let my-property property
         ask other turtles-here
+          ; POSSESSOR vs HAWK: see above
           [if breed = hawks
             [if my-property = 1
               [set turtle-energy (turtle-energy + 0.5 * value - cost)
@@ -186,7 +191,7 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
              if my-property = 0
               [set turtle-energy (turtle-energy + value)]
             ]
-           ; POSSESSOR vs HAWK: see above
+          ; POSSESSOR vs DOVE: see above
            if breed = doves
              [if my-property = 1
                [ask myself [set turtle-energy (turtle-energy + value)]]
@@ -194,16 +199,15 @@ ask patches with [count turtles-here = 2 and pcolor = green] ; why would it need
                [set turtle-energy (turtle-energy + 0.5 * value)
                 ask myself [set turtle-energy (turtle-energy + 0.5 * value)]]
              ]
-           ; POSSESSOR vs DOVE: see above
+          ; POSSESSOR vs POSSESSOR
+           ; - if the currently selected P is an owner, its opponent is necessarily an intruder and will behave as a dove, therefore the former wins the full value
+           ; - if the currently selected P is an intruder, its opponent is necessarily an owner and will behave as a hawk, therefore the latter wins the full value
            if breed = possessors
              [if my-property = 1
                [ask myself [set turtle-energy (turtle-energy + value)]]
               if my-property = 0
                [set turtle-energy (turtle-energy + value)]
-             ]
-           ; POSSESSOR vs POSSESSOR
-           ; - if the currently selected P is an owner, its opponent is necessarily an intruder and will behave as a dove, therefore the former wins the full value
-           ; - if the currently selected P is an intruder, its opponent is necessarily an owner and will behave as a hawk, therefore the latter wins the full value
+            ]
           ]
         ]
     ]
@@ -230,7 +234,7 @@ end
 
 ;****************T0 PERISH**********************
 
-; Doesn't really need an explanation. We all end up here, eventually :)
+; When energy is over, agents disappear.
 to perish
 if turtle-energy < 0
 [die]
@@ -239,8 +243,7 @@ end
 
 ;******************PLOTS**************************
 
-; Yeah this literally plots the fraction of each breed wrt the total population.
-; Looks like we need a dum function to plot zero in the event that all agents die.
+; Fraction of each breed with respect to total population is plotted.
 to do-plot
 set-current-plot "Proportions"
 set-current-plot-pen "Doves"
@@ -522,19 +525,17 @@ HORIZONTAL
 @#$#@#$#@
 ## Classic Hawk vs Dove
 
-The model we have built is based on evolutionary game theory, a discipline first applied to evolutionary processes by John Maynard Smith. Game theory is based on sub-groups of interacting agents with certain payoffs occurring between the agents. These payoffs depend on the behavioral strategies of each of the interacting agents. In biology, the classic example is "doves and hawks" where two behavioral strategies exist in a population of organisms, the "dove" strategy, which is cooperative, and the "hawk" strategy, which is exploitative. When the agents encounter a resource, they can access it by working together. If two doves cooperate, then they share the resource equally, 0.5v (where v = value of resource). However, if a hawk and dove come together on a resource, the hawk grabs everything, so the dove gets zero and the hawk gets v. The catch comes if two hawks interact--they both try to grab the resource, fight at a cost (cost = c) and so, on average, get 0.5v-c. 
-
-Depending on the value of the resource, v, and the cost of fighting, c, hawks can go to fixation (eliminate the doves) or a stable polymorphism can exist, where the level of doves and hawks balances, though not necessarily at 50% each in the population.
+The simulation is built upon an extension of the Hawk versus Dove model. In Hawk versus Dove two agents face a contest over a shareable resource. The Hawk strategy is the exploitative one, the agent is ready to fight to have access to the resource V, even if this comes at a price of injury h. Doves, instead, try to access the resource in the same way as Hawks do, but if the opponent escalates, they run away instead of incurring the cost of h. When two hawks or two doves meet, they have only a one-half chance of winning the asset, but each hawk does also have to subtract the price of injury. However, when one hawk and one dove meet, the hawk gets all the benefit V.
 
 ## The Possessors
 
-The novelty of our simulation is to be found in the presence of a new type of agents, the possessors. In every period T, each possessor can either be an owner or an intruder. In the former case, the agent acts as a hawk (because it "owns" the resource, so it does not want to lose the access to it). Inversely, when a possessor does not own the resource but is only trying to access it without having any rights on it, i.e. it is an intruder, its strategy resembles the one of doves.
+The novelty of our simulation is to be found in the presence of a new type of agents, the possessors and the traders. In every period T, each possessor can either be an owner or an intruder. In the former case, the agent acts as a hawk (because it "owns" the resource, so it does not want to lose the access to it). Inversely, when a possessor does not own the resource but is only trying to access it without having any rights on it, i.e. it is an intruder, its strategy resembles the one of doves.
 
 ## The Game
 
-Agents wander from patch to patch in a somewhat random fashion (they change their heading plus or minus 45 degrees). Each move costs energy, but they can get energy from patches. If they arrive alone, then they get all the energy but if there is another agent, then they get a payoff depending on thee type of turtle they are sharing the patch with. Up to two turtles can occupy the same patch. If the energy of a turtle reaches a certain level, it reproduces asexually, and if its energy reaches zero, it dies.
+Agents wander from patch to patch in a random fashion, but each movement comes at an energy cost. To recharge their energy level, agents need to get to green patches. If an agents gets to the green patch alone it is going to benefit from all the energy, otherwise they are going to share it according to the payoff criteria discussed above. If the energy of a turtle reaches a certain threshold, it reproduces asexually, and if its energy reaches zero, it dies.
 
-Patches require a certain amount of time before they recover their resource value. This controls the population of agents. Patches with resources avalable are green; they are a lighter color if their resources are not available.
+Patches require a certain amount of time before they recover their resource value. This controls the agents' population. In patches with a light color energy resources are not available.
 
 ## Results
 
