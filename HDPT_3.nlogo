@@ -1,4 +1,4 @@
-globals [cycles]
+globals [cycles encounters nsteps]
 
 ;breed declarations
 breed [ doves dove ]
@@ -21,6 +21,8 @@ patches-own [energy energy-time]
 to setup
 ca             ;clear all
 set cycles 0
+set encounters 0
+set nsteps 0
 ask patches [set pcolor green set energy-time 1]    ; all patches are initialized with full energy (green color)
 
 ; agents are created in a number specified by the user in the interface
@@ -106,6 +108,7 @@ if count turtles-at dx dy < 2
 [fd 1]
 set tries tries + 1]
 set turtle-energy turtle-energy - 1
+set nsteps nsteps + 1
 end
 
 
@@ -117,7 +120,7 @@ to get-energy
 ; Clearly, the correspondent patches lose their energy (this is represented by their color becoming lighter). Simultaneously, energy-time counter is set to zero
 ask patches with [count turtles-here = 1 and pcolor = green]
   [ask turtles-here
-    [set turtle-energy turtle-energy + value]
+    [set turtle-energy turtle-energy + ((value + lessvalue) / 2) ]
      set energy-time 0
      set pcolor green + 1
   ]
@@ -126,7 +129,8 @@ ask patches with [count turtles-here = 1 and pcolor = green]
 ; On twofold populated green patches energy contention takes place (if there happens to be energy indeed)
 ; To tell agents what to do we need a stratified if hierarchy since their behaviour depends on both their breed and their opponent's breed
 ask patches with [count turtles-here = 2 and pcolor = green]
-[without-interruption
+[set encounters encounters + 1
+ without-interruption
   [
     ask one-of turtles-here                ;asking turtle 1
      ; At every step, each agent is given the status of owner/intruder with a probability of f/1-f respectively (f is user-defined)
@@ -272,13 +276,13 @@ ask patches with [count turtles-here = 2 and pcolor = green]
                 [if valuation = value              ;counterpart values its property more: no trade can take place
                    [set turtle-energy (turtle-energy + valuation)]
                  if valuation = lessvalue          ;counterpart values its property less i.e. wants to sell it to the intruder
-                   [set turtle-energy (turtle-energy + x)
+                   [set turtle-energy (turtle-energy + x - valuation)
                     ask myself[set turtle-energy (turtle-energy + my-valuation - x)]]
                 ]
               if property = 0                      ;counterpart is an intruder
                 [if valuation = value              ;counterpart values the intruded property more i.e. wants to buy it
                    [set turtle-energy (turtle-energy + valuation - x)]
-                    ask myself[set turtle-energy(turtle-energy + x)]]
+                    ask myself[set turtle-energy(turtle-energy + x - my-valuation)]]
                  if valuation = lessvalue          ;counterpart values the intruded property less: no trade can take place
                    [ask myself[set turtle-energy(turtle-energy + my-valuation)]]
              ]
@@ -351,8 +355,8 @@ end
 GRAPHICS-WINDOW
 463
 10
-1016
-564
+750
+298
 -1
 -1
 13.3
@@ -365,10 +369,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--20
-20
--20
-20
+-10
+10
+-10
+10
 0
 0
 1
@@ -484,7 +488,7 @@ reproduce-threshold
 reproduce-threshold
 0
 100
-15.0
+29.0
 1
 1
 NIL
@@ -499,7 +503,7 @@ value
 value
 0
 10
-3.0
+7.0
 1
 1
 NIL
@@ -514,7 +518,7 @@ cost
 cost
 0
 10
-1.0
+1.4
 0.1
 1
 NIL
@@ -540,7 +544,7 @@ energy-time-threshold
 energy-time-threshold
 0
 100
-20.0
+18.0
 1
 1
 NIL
@@ -626,10 +630,10 @@ SLIDER
 83
 x
 x
-lessvalue
-value
-1.8
-1
+lessvalue + 0.1
+value - 0.1
+3.0
+0.1
 1
 NIL
 HORIZONTAL
@@ -643,11 +647,33 @@ lessvalue
 lessvalue
 0
 value
-0.8
+2.0
 0.1
 1
 NIL
 HORIZONTAL
+
+MONITOR
+97
+323
+191
+368
+NIL
+encounters
+1
+1
+11
+
+MONITOR
+26
+321
+84
+366
+NIL
+nsteps
+1
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -916,6 +942,51 @@ NetLogo 6.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="10000"/>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="f">
+      <value value="0.25"/>
+      <value value="0.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="reproduce-threshold">
+      <value value="29"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lessvalue">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-energy">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="energy-time-threshold">
+      <value value="18"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="cost">
+      <value value="1.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-hawks">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-possessors">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-traders">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="x">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="value">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-doves">
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
