@@ -14,6 +14,9 @@ breed [ traders trader]
 ; - property is a binary indicating an agent's status of owner (1) / intruder (0)
 ; - valuation is a binary indicating how a trader values either his own or his counterpart's property in a dispute over that property: "more" (value) or "less" (lessvalue)
 
+; the functions that were adapted from the work of Rick O' Gorman (reference in the info section) are: to setup, to move, to reproduce and to perish.
+; the focus of our work was the get-energy function, which is the key one because it concerns the interactions between agents choosing different strategies.
+
 turtles-own [turtle-energy xhere yhere tries property valuation]
 patches-own [energy energy-time]
 
@@ -676,39 +679,19 @@ nsteps
 11
 
 @#$#@#$#@
-## WHAT IS IT?
+# Game
 
-This is a model based on evolutionary game theory. This theory was first applied to evolutionary processes by John Maynard Smith. Game theory is based on sub-groups of interacting agents, drawn from a meta-population, with certain payoffs occurring between the agents. These payoffs depend on the behavioral strategies of each of the interacting agents. In biology, the classic example is "doves and hawks" where two behavioral strategies exist in a population of organisms, the "dove" strategy, which is cooperative, and the "hawk" strategy, which is exploitative. When the agents encounter a resource, they can access it by working together. If two doves cooperate, then they share the resource equally, 0.5v (where v = value of resource). However, if a hawk and dove come together on a resource, the hawk grabs everything, so the dove gets zero and the hawk gets v. The catch comes if two hawks interact--they both try to grab the resource, fight at a cost (cost = c) and so, on average, get 0.5v-c. 
+Each simulation run starts with a setup routine, as a user-defined number of agents, each with its own strategy - referred to as a breed in the Netlogo jargon - are randomly scattered across a flat square environment consisting of 225 patches. Agents start with a fixed amount of energy and, as they lose a unit of it at each time step, they need to move in order to find some more. Energy can thus be fetched from free patches or, in the event that two agents end up on the same one, through a contention. Patches that recently got their energy taken away need a fixed amount of time to have it replenished. Another key feature of the simulation is the reproduction/death mechanism: when they reach a certain amount of energy agents can reproduce asexually at the cost of half of their energy and will generate an agent of the same breed as a result; on the other hand, agents that got no residual energy are bound to instantly be removed from the environment. Clearly, a breed whose agents eventually all die is considered to be extinct.
+It is noteworthy that all of these enviroment/initialization parameters need to be fixed before exploring the very payoff parameter space. In particular, we sought for a configuration in which the ratio between encounters of two agents and total steps taken (i.e. the density of agents) wasn't too small, the total population of agents was roughly constant (or at least not likely to snowball or be decimated too quickly) and the time needed for a single strategy to lock in as ESS not too long. 
+To simulate contentions over a patch we need to set up several parameters that appear in the payoff matrices:
+    - value is the asset value V i.e. the amount of energy contained in every patch.
+    - cost is the toll h hawks pay for figthing.
+    - f is the fraction of confrontations wherein any given agent expects to be an owner (and 1-f is the frequency with which it expects to be an intruder). We make use of a PRNG to actually interpret f as a probability and thus, as soon as they meet on the same patch, assign a binary parameter to both agents. Although every contending agent has this ownership status assigned at any given time, only Possessors and, if they're present, Traders, will change their behaviour accordingly.
+    - lessvalue. In the Hawk-Dove-Possessor-Trader game only, each agent fighting over a patch has an equal probability to value it value or lessvalue, the latter being smaller than the former. This binary parameter actually affects all the breeds as agents winning a dispute will gain an amount of energy that depends on how they value the asset. On top of that, traders that meet with each other have the chance of trading the asset if they judge it being convenient.
+    - x is the price, bounded in [lessvalue, value] that intruding traders that value their counterpart's property more than them will pay to buy it. This way, both traders making a deal over a patch will both benefit from that - i.e. they will both gain a positive amount of energy - which is the very reason why we expect to see their strategy as evolutionarily preferred.
 
-Depending on the value of the resource, v, and the cost of fighting, c, hawks can go to fixation (eliminate the doves) or a stable polymorphism can exist, where the level of doves and hawks balances, though not necessarily at 50% each in the population.
-
-In this model, I have also added a third strategy, "retaliator." Retaliators act like doves with actual doves and with other retaliators, but act like hawks with hawks. Retaliators thus have an advantage over hawks because they will only pay the cost, c, of fighting if they interact with a hawk but won't pay that cost if interacting with a dove or another retaliator. Hawks, however, will pay the cost c if they interact with another hawk or retaliator. A population with all three strategies can have a number of different outcomes, depending on whether doves go extinct.
-
-## HOW IT WORKS
-
-Turtles wander from patch to patch in a somewhat random fashion (they change their heading plus or minus 45 degrees). Each move costs energy, but they can get energy from patches. If they arrive alone, then they get all the energy but if there is another turtle, then they get a payoff depending on thee type of turtle they are there with. Up to two turtles can occupy the same patch. If the energy of a turtle reaches a certain level, it reproduces asexually, and if its energy reaches zero, it dies.
-
-The reason that a turtle gets energy if alone is that otherwise, in situations where there is a net cost for hawks interacting with other hawks and there are two strategies, hawk and dove, then the hawks would become fixed, and then all die!!!
-
-Patches require a certain amount of time before they recover their resource value. This controls the population of turtles. Patches with resources avalable are green; they are a lighter color if their resources are not available.
-
-## HOW TO USE IT
-
-Run the model with only doves and hawks. Start with equal numbers of each type, and with the value of the resource greater than twice the cost of fighting. The doves will go extinct.
-
-Now try the same again, but have the value of resource greater than the cost, but less than twice as great. A stable polymorphism should result.
-
-Next, set the cost of fighting greater than the value of the resource. The polymorphism is still stable, but the level has changed.
-
-Finally, put some retaliators in the population, set v > 2c and run again. Now, there is an unstable polymorphism. Try different runs with the same settings. Vary the intial numbers of each type of organism.
-
-## AUTHOR CONTACT INFO (AS OF AUGUST 2003):
-
-Rick O'Gorman  
-SUNY-Binghamton  
-Binghamton NY 13902-6000  
-USA  
-jogorman@binghamton.edu
+# Reference:
+Credit for the original model set-up has to be given to Rick O' Gorman's evolutionary Netlogo model (downloadable at http://ccl.northwestern.edu/netlogo/models/community/GameTheory).
 @#$#@#$#@
 default
 true
