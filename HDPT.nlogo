@@ -1,3 +1,7 @@
+;lines 5-360 are actual Netlogo code
+;lines 362-683 are our UI
+;lines 686-698 are the info section
+;lines 932-1154 are behaviorspace settings
 globals [cycles encounters nsteps]
 
 ;breed declarations
