@@ -9,7 +9,7 @@
 
 ## UI and parameters documentation
 
-#Sliders
+###Sliders
 - "init-(breed name)": initializes the number of agents of the correspondent breed
 - "f": probability that any given agent is given the status of owner at any given time step
 - "x": price traders will potentially exchange their asset for
@@ -20,7 +20,7 @@
 - "init-energy": initial amount of energy given to every agent
 - "energy-time-thershold": number of timesteps required for an energy-depleted patch to have its energy replenished.
 
-#Further UI info
+###Further UI info
 - Arrows spread in the square box after the setup are agents; colors correspond to breeds according to the legend inside the plot.
 - Dark green patches are provided with energy, whereas light green patches are not.
 - The bottom-left plot is showing the evolution of relative agent count for each breed in real time: frequency = 0 means that a breed has undergone extinction, whereas frequency = 1 means that a breed has established itself as ESS for the current simulation.
