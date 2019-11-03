@@ -1,7 +1,8 @@
-;lines 5-360 are actual Netlogo code
-;lines 362-683 are our UI
-;lines 686-698 are the info section
-;lines 932-1154 are behaviorspace settings
+;lines 6-361 are our actual Netlogo simulation code
+;lines 363-684 are Netlogo UI code
+;lines 687-699 are Netlogo info section code
+;lines 701-927are yet more Netlogo meta-code
+;lines 933-1155 are behaviorspace settings
 globals [cycles encounters nsteps]
 
 ;breed declarations
