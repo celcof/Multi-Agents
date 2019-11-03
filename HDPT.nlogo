@@ -925,7 +925,6 @@ NetLogo 6.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
-;behaviorspace settings
 <experiments>
   <experiment name="HDPT_1" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
