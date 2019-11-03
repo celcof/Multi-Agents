@@ -925,18 +925,21 @@ NetLogo 6.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+;behaviorspace settings
 <experiments>
-  <experiment name="experiment" repetitions="3" runMetricsEveryStep="true">
+  <experiment name="HDPT_1" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="10000"/>
-    <metric>count turtles</metric>
+    <metric>count hawks</metric>
+    <metric>count doves</metric>
+    <metric>count possessors</metric>
+    <metric>count traders</metric>
     <enumeratedValueSet variable="f">
       <value value="0.25"/>
-      <value value="0.3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="reproduce-threshold">
-      <value value="29"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="lessvalue">
       <value value="2"/>
@@ -945,19 +948,30 @@ NetLogo 6.1.0
       <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="energy-time-threshold">
-      <value value="18"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="cost">
-      <value value="1.4"/>
+      <value value="0.25"/>
+      <value value="0.5"/>
+      <value value="0.75"/>
+      <value value="1"/>
+      <value value="1.25"/>
+      <value value="1.5"/>
+      <value value="1.75"/>
+      <value value="2"/>
+      <value value="2.25"/>
+      <value value="2.5"/>
+      <value value="2.75"/>
+      <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="init-hawks">
-      <value value="100"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="init-possessors">
-      <value value="100"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="init-traders">
-      <value value="100"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="x">
       <value value="3"/>
@@ -966,7 +980,172 @@ NetLogo 6.1.0
       <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="init-doves">
-      <value value="100"/>
+      <value value="20"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="HDP_1" repetitions="50" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="10000"/>
+    <metric>count hawks</metric>
+    <metric>count doves</metric>
+    <metric>count possessors</metric>
+    <enumeratedValueSet variable="f">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="reproduce-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lessvalue">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-energy">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="energy-time-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="cost">
+      <value value="0.25"/>
+      <value value="0.5"/>
+      <value value="0.75"/>
+      <value value="1"/>
+      <value value="1.25"/>
+      <value value="1.5"/>
+      <value value="1.75"/>
+      <value value="2"/>
+      <value value="2.25"/>
+      <value value="2.5"/>
+      <value value="2.75"/>
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-hawks">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-possessors">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-traders">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="x">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="value">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-doves">
+      <value value="20"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="HDPT_2" repetitions="50" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="10000"/>
+    <metric>count hawks</metric>
+    <metric>count doves</metric>
+    <metric>count possessors</metric>
+    <metric>count traders</metric>
+    <enumeratedValueSet variable="f">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="reproduce-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lessvalue">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-energy">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="energy-time-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="cost">
+      <value value="0.25"/>
+      <value value="0.5"/>
+      <value value="0.75"/>
+      <value value="1"/>
+      <value value="1.25"/>
+      <value value="1.5"/>
+      <value value="1.75"/>
+      <value value="2"/>
+      <value value="2.25"/>
+      <value value="2.5"/>
+      <value value="2.75"/>
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-hawks">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-possessors">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-traders">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="x">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="value">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-doves">
+      <value value="20"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="HD_1" repetitions="50" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="10000"/>
+    <metric>count hawks</metric>
+    <metric>count doves</metric>
+    <enumeratedValueSet variable="f">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="reproduce-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="lessvalue">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-energy">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="energy-time-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="cost">
+      <value value="0.25"/>
+      <value value="0.5"/>
+      <value value="0.75"/>
+      <value value="1"/>
+      <value value="1.25"/>
+      <value value="1.5"/>
+      <value value="1.75"/>
+      <value value="2"/>
+      <value value="2.25"/>
+      <value value="2.5"/>
+      <value value="2.75"/>
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-hawks">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-possessors">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-traders">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="x">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="value">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="init-doves">
+      <value value="20"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
